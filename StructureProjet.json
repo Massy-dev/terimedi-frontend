@@ -1,0 +1,89 @@
+terimedi-dashboard/
+│
+├── app/
+│   ├── layout.tsx                # Layout global (barre latérale, header, etc.)
+│   ├── page.tsx                  # Page d’accueil / tableau de bord global (Admin ou redirection)
+│   │
+│   ├── auth/
+│   │   ├── login/
+│   │   │   └── page.tsx         # Page de connexion (admin + pharmacie)
+│   │   └── layout.tsx
+│   │
+│   ├── admin/
+│   │   ├── layout.tsx            # Layout spécifique admin (sidebar + routes)
+│   │   ├── dashboard/
+│   │   │   └── page.tsx          # Tableau de bord admin (statistiques globales)
+│   │   ├── orders/
+│   │   │   └── page.tsx          # Liste de toutes les commandes
+│   │   ├── pharmacies/
+│   │   │   └── page.tsx          # Gestion des pharmacies
+│   │   ├── users/
+│   │   │   └── page.tsx          # Liste des utilisateurs
+│   │   ├── payments/
+│   │   │   └── page.tsx          # Paiements / facturation
+│   │   └── settings/
+│   │       └── page.tsx          # Configuration générale
+│   │
+│   ├── pharmacy/
+│   │   ├── layout.tsx            # Layout spécifique pharmacie
+│   │   ├── dashboard/
+│   │   │   └── page.tsx          # Tableau de bord pharmacie
+│   │   ├── orders/
+│   │   │   └── page.tsx          # Liste des commandes reçues
+│   │   └── profile/
+│   │       └── page.tsx          # Profil de la pharmacie
+│   │
+│   └── not-authorized/
+│       └── page.tsx              # Page d’accès refusé
+│
+├── components/
+│   ├── ui/                       # Composants shadcn/ui
+│   ├── layout/                   # Header, Sidebar, etc.
+│   ├── charts/                   # Graphiques du dashboard
+│   └── forms/                    # Formulaires (login, etc.)
+│
+├── lib/
+│   ├── api.ts                    # Fonctions de connexion à ton API Django
+│   ├── auth.ts                   # Gestion des tokens JWT / Firebase
+│   └── utils.ts                  # Fonctions utilitaires
+│
+├── middleware.ts                 # Middleware pour rediriger selon le rôle
+├── tailwind.config.ts
+├── tsconfig.json
+├── next.config.mjs
+└── package.json
+
+
+
+---------- structure 2 ---------------
+terimedi-dashboard/
+│
+├── app/
+│   ├── auth/
+│   │   ├── login/
+│   │   │   └── page.tsx
+│   │   ├── register/
+│   │   │   └── page.tsx
+│   ├── pharmacy/
+│   │   └── add/
+│   │       └── page.tsx
+│   ├── layout.tsx
+│   ├── globals.css
+│   └── page.tsx  (page d’accueil temporaire)
+│
+├── components/
+│   ├── forms/
+│   │   ├── LoginForm.tsx
+│   │   ├── RegisterForm.tsx
+│   │   └── PharmacyForm.tsx
+│   ├── ui/
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   └── Loader.tsx
+│
+├── lib/
+│   ├── api.ts (config axios)
+│   └── auth.ts (helpers JWT/token)
+│
+├── package.json
+└── tsconfig.json
