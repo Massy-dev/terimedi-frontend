@@ -1,7 +1,7 @@
 // app/admin/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -116,7 +116,10 @@ const recentActivities = [
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats>(mockStats);
-  setStats(stats);
+  
+  useEffect(() => {
+    setStats(stats);
+  });
   return (
     <div className="space-y-6">
       {/* Page Header */}
