@@ -260,7 +260,7 @@ export default function ListPharmacies() {
                   </TableRow>
                 ) : (
                   filteredPharmacies.map((pharmacy) => {
-                    const config = statutConfig["active"];
+                    const config = statutConfig[pharmacy.statut];
                     const Icon = config.icon;
                     return (
                       <TableRow key={pharmacy.id}>
