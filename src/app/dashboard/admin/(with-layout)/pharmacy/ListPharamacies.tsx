@@ -91,7 +91,7 @@ export default function ListPharmacies() {
         });
 
           const data = response.data.results;
-          console.log("données pharmacies ",data)
+         
           setPharmacies(data);
         } catch (error) {
           console.error("Erreur chargement pharmacies:", error);
@@ -134,19 +134,37 @@ export default function ListPharmacies() {
     setDialogOpen(true);
   };
 
-  const handleAction = () => {
+  const handleAction = async () => {
+
+    
     if (!selectedPharmacy) return;
 
+    //Validation de la pharmacie
+    console.log("statut valeur ", dialogAction)
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/pharmacies/${selectedPharmacy.id}/${dialogAction}/`,
+      dialogAction,
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      }
+    );
     // TODO: Appel API pour effectuer l'action
     const updatedPharmacies = pharmacies.map((p) => {
       if (p.id === selectedPharmacy.id) {
+
         if (dialogAction === "valider") {
           return { ...p, statut: "active" as const };
-        } else if (dialogAction === "rejeter") {
+        } 
+        
+        else if (dialogAction === "rejeter") {
           return { ...p, statut: "rejetee" as const };
-        } else if (dialogAction === "suspendre") {
+        } 
+        
+        else if (dialogAction === "suspendre") {
           return { ...p, statut: "suspendue" as const };
         }
+
+      
       }
       return p;
     });
@@ -260,7 +278,7 @@ export default function ListPharmacies() {
                   </TableRow>
                 ) : (
                   filteredPharmacies.map((pharmacy) => {
-                    console.log("statut pharmacie ", pharmacy.statut)
+                    
                     var config
                     if(pharmacy.is_approved === false){
                       config = statutConfig["en_attente"];
@@ -344,7 +362,7 @@ export default function ListPharmacies() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  className="text-green-600 cursor-pointer hover:text-green-700 hover:bg-green-50"
                                   onClick={() => openDialog(pharmacy, "valider")}
                                 >
                                   <CheckCircle className="h-4 w-4" />
@@ -352,7 +370,7 @@ export default function ListPharmacies() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  className="text-red-600 cursor-pointer hover:text-red-700 hover:bg-red-50"
                                   onClick={() => openDialog(pharmacy, "rejeter")}
                                 >
                                   <XCircle className="h-4 w-4" />
@@ -364,7 +382,7 @@ export default function ListPharmacies() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                                className="text-orange-600 cursor-pointer hover:text-orange-700 hover:bg-orange-50"
                                 onClick={() => openDialog(pharmacy, "suspendre")}
                               >
                                 <XCircle className="h-4 w-4" />

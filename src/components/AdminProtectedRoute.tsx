@@ -46,7 +46,7 @@ export default function AdminProtectedRoute({ children }: { children: React.Reac
                 headers: { Authorization: `Bearer ${token}` },
               });
             
-         console.log("profile", profile.data);
+        
         if (profile.data.role !== "admin") {
           router.push("/not-authorized");
           return;
