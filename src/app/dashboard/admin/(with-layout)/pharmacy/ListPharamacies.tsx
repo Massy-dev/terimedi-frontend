@@ -90,7 +90,7 @@ export default function ListPharmacies() {
           },
         });
 
-            const data = response.data.results;
+          const data = response.data.results;
           console.log("données pharmacies ",data)
           setPharmacies(data);
         } catch (error) {
@@ -261,8 +261,16 @@ export default function ListPharmacies() {
                 ) : (
                   filteredPharmacies.map((pharmacy) => {
                     console.log("statut pharmacie ", pharmacy.statut)
-                    const config = statutConfig[pharmacy.statut];
-                    const Icon = config.icon;
+                    var config
+                    if(pharmacy.is_approved === false){
+                      config = statutConfig["en_attente"];
+                    }else if(pharmacy.is_deleted == true){
+                      config = statutConfig["suspendue"];
+                    }else{
+                      config = statutConfig["active"];
+                    }
+                    
+                    let Icon = config?.icon;
                     return (
                       <TableRow key={pharmacy.id}>
                         <TableCell>
@@ -306,9 +314,9 @@ export default function ListPharmacies() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge className={config.color} variant="outline">
-                            <Icon className="h-3 w-3 mr-1" />
-                            {config.label}
+                          <Badge className={config?.color} variant="outline">
+                            {Icon ? <Icon className="h-3 w-3 mr-1" /> : null}
+                            {config?.label}
                           </Badge>
                         </TableCell>
                         <TableCell>
