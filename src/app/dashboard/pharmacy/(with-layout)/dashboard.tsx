@@ -158,7 +158,10 @@ export default function PharmacienOverview() {
                 <XAxis dataKey="jour" />
                 <YAxis />
                 <Tooltip 
-                  formatter={(value: number) => `${value.toLocaleString()} FCFA`}
+                  formatter={(value?: number) => 
+                    value !== undefined
+                    ?`${value.toLocaleString()} FCFA`
+                    :"_"}
                 />
                 <Bar dataKey="montant" fill="#16a34a" radius={[8, 8, 0, 0]} />
               </BarChart>

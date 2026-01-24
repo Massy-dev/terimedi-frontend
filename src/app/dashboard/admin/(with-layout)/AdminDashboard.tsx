@@ -198,7 +198,12 @@ export default function AdminDashboard() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="mois" />
                 <YAxis />
-                <Tooltip formatter={(value: number) => `${(value / 1000000).toFixed(1)}M FCFA`} />
+                <Tooltip formatter={(value?: number) => 
+                  value !== undefined
+                  ?`${(value / 1_000_000).toFixed(1)}M FCFA`
+                : "_"
+                  } 
+                 />
                 <Line type="monotone" dataKey="montant" stroke="#16a34a" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>

@@ -462,7 +462,11 @@ export default function PharmacyDetailPage({
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="mois" />
                     <YAxis />
-                    <Tooltip formatter={(value: number) => `${(value / 1000).toFixed(0)}K FCFA`} />
+                    <Tooltip formatter={(value?: number) => 
+                      value !== undefined
+                      ?`${(value / 1000).toFixed(0)}K FCFA` 
+                      : "_" 
+                      }/>
                     <Line type="monotone" dataKey="montant" stroke="#16a34a" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
