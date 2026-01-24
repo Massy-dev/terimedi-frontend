@@ -91,7 +91,7 @@ export default function ListPharmacies() {
         });
 
             const data = response.data.results;
-          console.log(data)
+          console.log("données pharmacies ",data)
           setPharmacies(data);
         } catch (error) {
           console.error("Erreur chargement pharmacies:", error);
@@ -260,6 +260,7 @@ export default function ListPharmacies() {
                   </TableRow>
                 ) : (
                   filteredPharmacies.map((pharmacy) => {
+                    console.log("statut pharmacie ", pharmacy.statut)
                     const config = statutConfig[pharmacy.statut];
                     const Icon = config.icon;
                     return (
