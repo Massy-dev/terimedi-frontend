@@ -78,7 +78,7 @@ export default function ListPharmacies() {
   const [statutFilter, setStatutFilter] = useState<string>("tous");
   const [selectedPharmacy, setSelectedPharmacy] = useState<Pharmacy | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogAction, setDialogAction] = useState<"valider" | "rejeter" | "supprimer" | "suspendre">("valider");
+  const [dialogAction, setDialogAction] = useState<"validate" | "reject" | "supprimer" | "suspendre">("validate");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -128,7 +128,7 @@ export default function ListPharmacies() {
     suspendues: pharmacies.filter((p) => p.statut === "suspendue").length,
   };
 
-  const openDialog = (pharmacy: Pharmacy, action: "valider" | "rejeter" | "supprimer" | "suspendre") => {
+  const openDialog = (pharmacy: Pharmacy, action: "validate" | "reject" | "supprimer" | "suspendre") => {
     setSelectedPharmacy(pharmacy);
     setDialogAction(action);
     setDialogOpen(true);
@@ -152,11 +152,11 @@ export default function ListPharmacies() {
     const updatedPharmacies = pharmacies.map((p) => {
       if (p.id === selectedPharmacy.id) {
 
-        if (dialogAction === "valider") {
+        if (dialogAction === "validate") {
           return { ...p, statut: "active" as const };
         } 
         
-        else if (dialogAction === "rejeter") {
+        else if (dialogAction === "reject") {
           return { ...p, statut: "rejetee" as const };
         } 
         
@@ -363,7 +363,7 @@ export default function ListPharmacies() {
                                   variant="ghost"
                                   size="sm"
                                   className="text-green-600 cursor-pointer hover:text-green-700 hover:bg-green-50"
-                                  onClick={() => openDialog(pharmacy, "valider")}
+                                  onClick={() => openDialog(pharmacy, "validate")}
                                 >
                                   <CheckCircle className="h-4 w-4" />
                                 </Button>
@@ -371,7 +371,7 @@ export default function ListPharmacies() {
                                   variant="ghost"
                                   size="sm"
                                   className="text-red-600 cursor-pointer hover:text-red-700 hover:bg-red-50"
-                                  onClick={() => openDialog(pharmacy, "rejeter")}
+                                  onClick={() => openDialog(pharmacy, "reject")}
                                 >
                                   <XCircle className="h-4 w-4" />
                                 </Button>
@@ -414,15 +414,15 @@ export default function ListPharmacies() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {dialogAction === "valider" && "Valider la pharmacie"}
-              {dialogAction === "rejeter" && "Rejeter la pharmacie"}
+              {dialogAction === "validate" && "Valider la pharmacie"}
+              {dialogAction === "reject" && "Rejeter la pharmacie"}
               {dialogAction === "suspendre" && "Suspendre la pharmacie"}
               {dialogAction === "supprimer" && "Supprimer la pharmacie"}
             </DialogTitle>
             <DialogDescription>
-              {dialogAction === "valider" &&
+              {dialogAction === "validate" &&
                 `Voulez-vous vraiment valider "${selectedPharmacy?.name}" ? La pharmacie pourra commencer à utiliser la plateforme.`}
-              {dialogAction === "rejeter" &&
+              {dialogAction === "reject" &&
                 `Voulez-vous vraiment rejeter "${selectedPharmacy?.name}" ? Cette action peut être annulée plus tard.`}
               {dialogAction === "suspendre" &&
                 `Voulez-vous vraiment suspendre "${selectedPharmacy?.name}" ? La pharmacie ne pourra plus utiliser la plateforme temporairement.`}
@@ -435,18 +435,18 @@ export default function ListPharmacies() {
               Annuler
             </Button>
             <Button
-              variant={dialogAction === "supprimer" || dialogAction === "rejeter" ? "destructive" : "default"}
+              variant={dialogAction === "supprimer" || dialogAction === "reject" ? "destructive" : "default"}
               onClick={handleAction}
               className={
-                dialogAction === "valider"
+                dialogAction === "validate"
                   ? "bg-green-600 hover:bg-green-700"
                   : dialogAction === "suspendre"
                   ? "bg-orange-600 hover:bg-orange-700"
                   : ""
               }
             >
-              {dialogAction === "valider" && "Valider"}
-              {dialogAction === "rejeter" && "Rejeter"}
+              {dialogAction === "validate" && "Valider"}
+              {dialogAction === "reject" && "Rejeter"}
               {dialogAction === "suspendre" && "Suspendre"}
               {dialogAction === "supprimer" && "Supprimer"}
             </Button>
