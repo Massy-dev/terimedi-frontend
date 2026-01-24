@@ -11,7 +11,16 @@ import NotificationToast from '../components/NotificationToast';
 function MyApp({ Component, pageProps }) {
   const [initialized, setInitialized] = useState(false);
 
- 
+    // 
+    const getUserId = useCallback(() => {
+      if (typeof window === 'undefined') return null;
+      
+      // Exemple: récupérer depuis localStorage
+      const userId = localStorage.getItem('user_id');
+      return userId ? parseInt(userId) : null;
+      
+      // Ou depuis un cookie, JWT, context, etc.
+    },[]);
 
   const initializeNotifications =  useCallback(async ()  => {
     try {
@@ -45,23 +54,14 @@ function MyApp({ Component, pageProps }) {
       console.error('Erreur initialisation notifications:', error);
       setInitialized(true);
     }
-  },[]);
+  },[getUserId]);
 
   useEffect(() => {
     // Initialiser les notifications au chargement de l'app
     initializeNotifications();
   }, [initializeNotifications]);
   
-  // Fonction à adapter selon votre système d'authentification
-  const getUserId = () => {
-    if (typeof window === 'undefined') return null;
-    
-    // Exemple: récupérer depuis localStorage
-    const userId = localStorage.getItem('user_id');
-    return userId ? parseInt(userId) : null;
-    
-    // Ou depuis un cookie, JWT, context, etc.
-  };
+  
 
   return (
     <>
