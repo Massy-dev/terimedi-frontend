@@ -12,11 +12,9 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import {
   Store,
-  MapPin,
   Phone,
   Mail,
   Clock,
-  Upload,
   Save,
   CheckCircle,
   Camera,

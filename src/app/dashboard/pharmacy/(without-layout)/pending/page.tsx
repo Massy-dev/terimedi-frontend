@@ -3,7 +3,7 @@
 import PendingPage from "./pending";  
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 export default function AddPharmacyPage() {
   
@@ -19,7 +19,7 @@ export default function AddPharmacyPage() {
             return;
           }
 
-      const profile = await axios.get("http://localhost:8000/api/pharmacies/me/", {
+      const profile = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pharmacies/me/`, {
                     headers: { Authorization: `Bearer ${token}` },
                   });
       console.log("test")

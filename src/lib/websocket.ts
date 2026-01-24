@@ -1,37 +1,51 @@
-// @ts-nocheck
+
 /**
  * Service WebSocket pour NextJS
  * Gère la connexion temps réel pour les notifications
  */
 
+type WebSocketStatus = "disconnected" | "connecting" | "connected" | "error";
+
+export type WebSocketMessage =
+  | { type: "notification"; notification: unknown }
+  | { type: "notification_read"; notification_id: string }
+  | { type: "mark_as_read"; notification_id: string }
+  | { type: "ping" };
+
+type MessageHandler = (message: WebSocketMessage) => void;
+type StatusHandler = (status: WebSocketStatus) => void;
+
 class WebSocketService {
-  constructor() {
-    this.ws = null;
-    this.reconnectAttempts = 0;
-    this.maxReconnectAttempts = 5;
-    this.reconnectDelay = 3000;
-    this.pingInterval = 30000;
-    this.pingTimer = null;
-    this.reconnectTimer = null;
-    this.messageHandlers = [];
-    this.statusHandlers = [];
-    this.status = 'disconnected'; // disconnected, connecting, connected, error
-  }
+
+  private ws: WebSocket | null = null;
+  private reconnectAttempts = 0;
+  private readonly maxReconnectAttempts = 5;
+  private readonly reconnectDelay = 3000;
+  private readonly pingInterval = 30000;
+
+  private pingTimer: ReturnType<typeof setInterval> | null = null;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+
+  private messageHandlers: MessageHandler[] = [];
+  private statusHandlers: StatusHandler[] = [];
+
+  private status: WebSocketStatus = "disconnected";
 
   /**
    * Se connecter au WebSocket
    */
-  connect(userId) {
+  connect(userId: string): void {
     if (this.ws?.readyState === WebSocket.OPEN || 
-        this.ws?.readyState === WebSocket.CONNECTING) {
+        this.ws?.readyState === WebSocket.CONNECTING
+      ) {
       console.log('WebSocket déjà connecté ou en cours de connexion');
       return;
     }
 
     try {
       this.updateStatus('connecting');
-      const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
-      const url = `${wsUrl}/ws/notifications/${userId}/`;
+      const wsBase = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
+      const url = `${wsBase}/ws/notifications/${userId}/`;
       
       console.log('Connexion WebSocket:', url);
       this.ws = new WebSocket(url);
@@ -43,9 +57,9 @@ class WebSocketService {
         this.startPing();
       };
 
-      this.ws.onmessage = (event) => {
+      this.ws.onmessage = (event: MessageEvent<string>) => {
         try {
-          const data = JSON.parse(event.data);
+          const data = JSON.parse(event.data) as WebSocketMessage;
           console.log('Message WebSocket reçu:', data.type);
           this.handleMessage(data);
         } catch (error) {
@@ -75,9 +89,9 @@ class WebSocketService {
   /**
    * Gérer les messages reçus
    */
-  handleMessage(data) {
+  private handleMessage(data: WebSocketMessage): void {
     // Notifier tous les handlers enregistrés
-    this.messageHandlers.forEach(handler => {
+    this.messageHandlers.forEach((handler) => {
       try {
         handler(data);
       } catch (error) {
@@ -89,7 +103,7 @@ class WebSocketService {
   /**
    * Envoyer un message
    */
-  send(message) {
+  private send(message: WebSocketMessage): void{
     if (this.ws?.readyState === WebSocket.OPEN) {
       try {
         this.ws.send(JSON.stringify(message));
@@ -105,7 +119,7 @@ class WebSocketService {
   /**
    * Marquer une notification comme lue
    */
-  markAsRead(notificationId) {
+  markAsRead(notificationId: string): void {
     this.send({
       type: 'mark_as_read',
       notification_id: notificationId,
@@ -115,17 +129,17 @@ class WebSocketService {
   /**
    * Envoyer un ping pour maintenir la connexion
    */
-  sendPing() {
+  private sendPing(): void {
     this.send({ type: 'ping' });
   }
 
   /**
    * Démarrer le timer de ping
    */
-  startPing() {
+  private startPing(): void {
     this.stopPing();
     this.pingTimer = setInterval(() => {
-      this.sendPing();
+      this.send({ type: "ping" });
     }, this.pingInterval);
   }
 
@@ -142,14 +156,14 @@ class WebSocketService {
   /**
    * Planifier une reconnexion
    */
-  scheduleReconnect(userId) {
+  scheduleReconnect(userId: string): void {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
       console.log('Nombre maximum de tentatives de reconnexion atteint');
       this.updateStatus('error');
       return;
     }
 
-    this.reconnectAttempts++;
+    this.reconnectAttempts+= 1;
     console.log(
       `Reconnexion WebSocket dans ${this.reconnectDelay / 1000}s (${this.reconnectAttempts}/${this.maxReconnectAttempts})...`
     );
@@ -159,54 +173,52 @@ class WebSocketService {
     }
 
     this.reconnectTimer = setTimeout(() => {
-      if (userId) {
-        this.connect(userId);
-      }
+     this.connect(userId);
+      
     }, this.reconnectDelay);
   }
 
   /**
    * Mettre à jour le statut
    */
-  updateStatus(newStatus) {
+  private updateStatus(newStatus: WebSocketStatus): void {
     this.status = newStatus;
-    this.statusHandlers.forEach(handler => {
-      try {
-        handler(newStatus);
-      } catch (error) {
-        console.error('Erreur dans status handler:', error);
-      }
-    });
+    this.statusHandlers.forEach((handler) => handler(newStatus));
+     
   }
 
   /**
    * S'abonner aux messages
    */
-  onMessage(handler) {
+  onMessage(handler: MessageHandler): () => void {
     this.messageHandlers.push(handler);
     
     // Retourner une fonction pour se désabonner
     return () => {
-      this.messageHandlers = this.messageHandlers.filter(h => h !== handler);
+      this.messageHandlers = this.messageHandlers.filter(
+        (h) => h !== handler
+      );
     };
   }
 
   /**
    * S'abonner aux changements de statut
    */
-  onStatusChange(handler) {
+  onStatusChange(handler: StatusHandler): () => void {
     this.statusHandlers.push(handler);
     
     // Retourner une fonction pour se désabonner
     return () => {
-      this.statusHandlers = this.statusHandlers.filter(h => h !== handler);
+      this.statusHandlers = this.statusHandlers.filter(
+        (h) => h !== handler
+      );
     };
   }
 
   /**
    * Se déconnecter
    */
-  disconnect() {
+  disconnect(): void {
     console.log('Déconnexion WebSocket...');
     
     this.stopPing();
@@ -228,7 +240,7 @@ class WebSocketService {
   /**
    * Reconnecter manuellement
    */
-  reconnect(userId) {
+  reconnect(userId: string): void {
     this.disconnect();
     this.connect(userId);
   }
@@ -236,22 +248,22 @@ class WebSocketService {
   /**
    * Vérifier si connecté
    */
-  isConnected() {
+  isConnected(): boolean {
     return this.ws?.readyState === WebSocket.OPEN;
   }
 
   /**
    * Obtenir le statut actuel
    */
-  getStatus() {
+  getStatus(): WebSocketStatus {
     return this.status;
   }
 }
 
 // Instance singleton
-let websocketService = null;
+let websocketService: WebSocketService | null = null;
 
-export const getWebSocketService = () => {
+export const getWebSocketService = (): WebSocketService | null => {
   if (typeof window === 'undefined') {
     // Ne pas créer d'instance côté serveur
     return null;

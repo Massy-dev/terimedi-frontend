@@ -26,7 +26,7 @@ export default function AdminPharmaciesPage() {
   const fetchPharmacies = async () => {
     console.log(localStorage.getItem("token"))
     try {
-      const response = await axios.get("http://localhost:8000/api/pharmacies/liste/",{
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pharmacies/liste/`,{
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -46,7 +46,7 @@ export default function AdminPharmaciesPage() {
     
     try {
       const response = await fetch(
-        `http://localhost:8000/api/pharmacies/${id}/${typeStatut}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/pharmacies/${id}/${typeStatut}`,
         {
           method: "POST",
           headers: {

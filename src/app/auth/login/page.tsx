@@ -18,11 +18,11 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const res = await axios.post("http://192.168.100.4:8000/api/users/login/", { phone, password });
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/login/`, { phone, password });
       setToken(res.data.access);
 
       // récupération du profil pour décider de la redirection
-      const profile = await axios.get("http://192.168.100.4:8000/api/pharmacies/me/", {
+      const profile = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pharmacies/me/`, {
         headers: { Authorization: `Bearer ${res.data.access}` },
       });
       console.log("test ",profile.data.pharmacy)
@@ -43,6 +43,7 @@ export default function LoginPage() {
         router.push("/dashboard/admin");
       }
     } catch (err: unknown) {
+      console.log(err)
       setError("Identifiants incorrects ou erreur serveur");
     } finally {
       setLoading(false);

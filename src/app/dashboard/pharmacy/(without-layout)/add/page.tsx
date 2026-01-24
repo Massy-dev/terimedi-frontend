@@ -1,6 +1,5 @@
 "use client"
 import PharmacyForm from './PharmacyForm';
-import PharmacyProtectedRoute from '@/components/PharmacyProtectedRoute';
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -26,7 +25,7 @@ export default function AddPharmacyPage() {
             return;
           }
 
-      const profile = await axios.get("http://localhost:8000/api/pharmacies/me/", {
+      const profile = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pharmacies/me/`, {
                     headers: { Authorization: `Bearer ${token}` },
                   });
 

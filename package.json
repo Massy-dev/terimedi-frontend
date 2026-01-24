@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "build:ignore-lint": "ESLINT_NO_DEV_ERRORS=true next build"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

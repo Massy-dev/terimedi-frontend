@@ -61,7 +61,7 @@ export default function CommandesPage() {
   useEffect(() => {
     async function fetchOrders() {
       try {
-        const response = await axios.get("http://localhost:8000/api/orders/",{
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/`,{
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

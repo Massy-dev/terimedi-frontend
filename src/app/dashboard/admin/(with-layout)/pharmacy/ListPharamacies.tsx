@@ -84,7 +84,7 @@ export default function ListPharmacies() {
   useEffect(() => {
     async function fetchPharmacies() {
       try {
-        const response = await axios.get("http://localhost:8000/api/pharmacies/liste/",{
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pharmacies/liste/`,{
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },

@@ -29,7 +29,7 @@ export default function PharmacyForm() {
   const [position, setPosition] = useState(defaultPosition);
   const [loadingLocation, setLoadingLocation] = useState(false);
 
-  const { register, handleSubmit, setValue, watch } = useForm();
+  const { register, handleSubmit, setValue } = useForm();
 
   // Récupération automatique de la position
   useEffect(() => {

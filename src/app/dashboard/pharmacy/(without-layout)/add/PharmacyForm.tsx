@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useForm, useFormContext, SubmitHandler } from "react-hook-form";
+import { useFormContext, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import "leaflet/dist/leaflet.css";
@@ -23,8 +23,8 @@ export default function PharmacyForm() {
   const [position, setPosition] = useState(defaultPosition);
   const [loadingLocation, setLoadingLocation] = useState(false);
 
-  const { register, handleSubmit, setValue, watch } = useFormContext<PharmacyFormData>();
-
+  const { register, handleSubmit, setValue } = useFormContext<PharmacyFormData>();
+  console.log(position)
   // Récupération automatique de la position
   useEffect(() => {
     if (autoLocate) {
@@ -64,7 +64,7 @@ export default function PharmacyForm() {
     };
 
     try {
-      await axios.post("http://localhost:8000/api/pharmacies/create/", payload, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/pharmacies/create/`, payload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

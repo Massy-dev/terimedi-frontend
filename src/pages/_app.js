@@ -1,5 +1,5 @@
-//@ts-nocheck
-import { useEffect, useState } from 'react';
+
+import { useEffect, useState, useCallback  } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -11,12 +11,9 @@ import NotificationToast from '../components/NotificationToast';
 function MyApp({ Component, pageProps }) {
   const [initialized, setInitialized] = useState(false);
 
-  useEffect(() => {
-    // Initialiser les notifications au chargement de l'app
-    initializeNotifications();
-  }, []);
+ 
 
-  const initializeNotifications = async () => {
+  const initializeNotifications =  useCallback(async ()  => {
     try {
       // 1. Demander la permission FCM et obtenir le token
       const fcmToken = await requestNotificationPermission();
@@ -48,8 +45,13 @@ function MyApp({ Component, pageProps }) {
       console.error('Erreur initialisation notifications:', error);
       setInitialized(true);
     }
-  };
+  },[]);
 
+  useEffect(() => {
+    // Initialiser les notifications au chargement de l'app
+    initializeNotifications();
+  }, [initializeNotifications]);
+  
   // Fonction à adapter selon votre système d'authentification
   const getUserId = () => {
     if (typeof window === 'undefined') return null;

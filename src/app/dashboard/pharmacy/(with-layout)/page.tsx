@@ -2,7 +2,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import axios from "axios";
 import PharmacienOverview from "./dashboard"
 
@@ -21,7 +21,7 @@ export default function DashboardPage() {
             return;
           }
 
-      const profile = await axios.get("http://localhost:8000/api/pharmacies/me/", {
+      const profile = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pharmacies/me/`, {
                     headers: { Authorization: `Bearer ${token}` },
                   });
       console.log("test")

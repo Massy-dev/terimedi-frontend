@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
   ShoppingCart,
   TrendingUp,
@@ -71,12 +72,13 @@ const statutConfig = {
 export default function PharmacienOverview() {
   const [stats, setStats] = useState<Stats>(mockStats);
   const [commandes, setCommandes] = useState<Commande[]>(mockCommandes);
-
+  
   useEffect(() => {
     // TODO: Remplacer par vos appels API
     // fetchStats();
     // fetchCommandes();
-  }, []);
+    
+  }, [commandes, stats]);
 
   return (
     <div className="space-y-6">
@@ -173,7 +175,7 @@ export default function PharmacienOverview() {
                 <CardDescription>Les dernières commandes reçues</CardDescription>
               </div>
               <Button variant="outline" size="sm" asChild>
-                <a href="/dashboard/pharmacy/orders/">Voir tout</a>
+                <Link href="/dashboard/pharmacy/orders/">Voir tout</Link>
               </Button>
             </div>
           </CardHeader>
@@ -216,16 +218,16 @@ export default function PharmacienOverview() {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-3">
             <Button className="h-24 flex flex-col items-center justify-center space-y-2" variant="outline" asChild>
-              <a href="/dashboard/pharmacy/orders/">
+              <Link href="/dashboard/pharmacy/orders/">
                 <ShoppingCart className="h-6 w-6" />
                 <span>Gérer les commandes</span>
-              </a>
+              </Link>
             </Button>
             <Button className="h-24 flex flex-col items-center justify-center space-y-2" variant="outline" asChild>
-              <a href="/dashboard/pharmacy/products">
+              <Link href="/dashboard/pharmacy/products">
                 <Package className="h-6 w-6" />
                 <span>Gérer le stock</span>
-              </a>
+              </Link>
             </Button>
             <Button className="h-24 flex flex-col items-center justify-center space-y-2" variant="outline" asChild>
               <a href="/dashboard/pharmacy/profile">

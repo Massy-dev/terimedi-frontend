@@ -18,7 +18,7 @@ export default function AdminProtectedRoute({ children }: { children: React.Reac
           return;
         }
 
-        const profile = await axios.get("http://localhost:8000/api/users/me/", {
+        const profile = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

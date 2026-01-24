@@ -42,7 +42,7 @@ export default function AdminProtectedRoute({ children }: { children: React.Reac
         // !(decoded.is_admin || à ajouter après
         // récupération du profil pour verification du role 
         
-              const profile = await axios.get("http://localhost:8000/api/pharmacies/me/", {
+              const profile = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pharmacies/me/`, {
                 headers: { Authorization: `Bearer ${token}` },
               });
 

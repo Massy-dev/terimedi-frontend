@@ -7,6 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Commande, CommandeStatut } from "@/types/commande";
+import Image from 'next/image'
+
 import {
   Dialog,
   DialogContent,
@@ -28,13 +31,20 @@ import {
   AlertCircle,
 } from "lucide-react";
 
+type StatutConfig = {
+  label: string;
+  color: string;
+  icon: React.ElementType;
+};
+
 interface CommandeDetailProps {
-  commande: any;
-  mode?: "accepte_par_client"|'devis_envoye' | 'preparation' | 'suivi' | 'annulee' | 'soumis';
+  commande: Commande;
+  mode?: "accepte_par_client" | "devis_envoye" | "preparation" | "suivi" | "annulee" | "soumis";
 }
 
-const statutConfig = {
+const statutConfig:  Record<CommandeStatut, StatutConfig> = {
   soumis: { label: "Soumis", color: "bg-blue-100 text-blue-800", icon: Clock },
+  en_attente: { label: "En attente", color: "bg-yellow-100 text-yellow-800", icon: Clock },
   en_attente_de_prix: { label: "En attente de prix", color: "bg-yellow-100 text-yellow-800", icon: Clock },
   devis_envoye: { label: "Devis envoyé", color: "bg-purple-100 text-purple-800", icon: Clock },
   accepte_par_client: { label: "Accepté par client", color: "bg-green-100 text-green-800", icon: CheckCircle },
@@ -52,15 +62,17 @@ export default function CommandeDetail({ commande, mode }: CommandeDetailProps) 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogAction, setDialogAction] = useState<'preparation' | 'livraison' | 'livree'>('preparation');
 
-  const config = statutConfig[commande.statut as keyof typeof statutConfig] || statutConfig.soumis;
+  const config = statutConfig[commande.statut];
   const Icon = config.icon;
 
-  // Calculer le sous-total
-  const sousTotal = commande.items?.reduce((acc: number, med: any) => {
-    return acc + (med.unit_price || 0) * med.quantity;
-  }, 0) || 0;
+  const items = commande.items ?? [];
 
-  const fraisLivraison = commande.delivery_fee || 0;
+  const sousTotal = items.reduce((acc, med) => {
+  return acc + (med.unit_price ?? 0) * med.quantity;
+  }, 0);
+
+  const fraisLivraison = commande.delivery_fee ?? 0;
+
   const total = sousTotal + fraisLivraison;
 
   // Gérer les actions de changement de statut
@@ -78,7 +90,7 @@ export default function CommandeDetail({ commande, mode }: CommandeDetailProps) 
       }
 
       const response = await fetch(
-        `http://127.0.0.1:8000/api/orders/${commande.id}/changer-statut/`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/orders/${commande.id}/changer-statut/`,
         {
           method: 'PATCH',
           headers: {
@@ -141,14 +153,14 @@ export default function CommandeDetail({ commande, mode }: CommandeDetailProps) 
         </Card>
       )}
 
-      {mode === 'annulee' && commande.raison_refus && (
+      {mode === 'annulee' && typeof commande === 'object' && commande !== null && 'raison_refus' in commande && commande.raison_refus && (
         <Card className="border-red-200 bg-red-50">
           <CardContent className="pt-6">
             <div className="flex items-start space-x-3">
               <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
               <div>
                 <p className="font-medium text-red-900">Commande refusée par le client</p>
-                <p className="text-sm text-red-700 mt-1">Raison : {commande.raison_refus}</p>
+                <p className="text-sm text-red-700 mt-1">{`Raison : ${commande.raison_refus ?? ''}`}</p>
               </div>
             </div>
           </CardContent>
@@ -300,7 +312,7 @@ export default function CommandeDetail({ commande, mode }: CommandeDetailProps) 
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {commande.items?.map((med: any, index: number) => (
+            {commande.items?.map((med,index) => (
               <div key={med.id} className="flex items-start justify-between py-3 border-b last:border-0">
                 <div className="flex items-start space-x-3 flex-1">
                   <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -314,8 +326,9 @@ export default function CommandeDetail({ commande, mode }: CommandeDetailProps) 
                         {med.note_pharmacie || 'Produit similaire'}
                       </Badge>
                     )}
+                    
                     {med.prescription_image && (
-                      <img
+                      <Image
                         src={med.prescription_image}
                         alt={med.produit}
                         className="mt-2 w-24 h-24 object-cover rounded-lg"

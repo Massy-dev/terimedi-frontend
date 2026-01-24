@@ -11,7 +11,6 @@ import {
   TrendingUp,
   AlertCircle,
   CheckCircle,
-  Clock,
   DollarSign,
 } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
@@ -117,13 +116,13 @@ const recentActivities = [
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats>(mockStats);
-
+  setStats(stats);
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Dashboard Administrateur</h1>
-        <p className="text-gray-600 mt-1">Vue d'ensemble de la plateforme TeriMedi</p>
+        <p className="text-gray-600 mt-1">Vue d&apos;ensemble de la plateforme TeriMedi</p>
       </div>
 
       {/* Main Stats Cards */}

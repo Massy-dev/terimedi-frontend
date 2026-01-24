@@ -42,7 +42,7 @@ export default function AdminProtectedRoute({ children }: { children: React.Reac
         // !(decoded.is_admin || à ajouter après
         // récupération du profil pour verification du role 
         
-              const profile = await axios.get("http://192.168.100.4:8000/api/users/me/", {
+              const profile = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/me/`, {
                 headers: { Authorization: `Bearer ${token}` },
               });
             
@@ -54,7 +54,7 @@ export default function AdminProtectedRoute({ children }: { children: React.Reac
        
 
         // ✅ Teste aussi la validité du token côté serveur (optionnel)
-        await axios.post("http://192.168.100.4:8000/api/token/verify/", {
+        await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/token/verify/`, {
           token:token
         }); 
 

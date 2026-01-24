@@ -2,20 +2,15 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import SoumettreDevis from "./SetPrices";
 import CommandeDetail from "./commandeDetail";
+import { Commande } from "@/types/commande";
 
-interface Commande {
-  id: number;
-  order_number: string;
-  statut: string;
-  // ... autres champs
-}
 
 export default function PharmacyOrderRouter() {
   const params = useParams();
-  const commandeId = params.id as string;
+  const commandeId = params?.id as string;
   
   const [commande, setCommande] = useState<Commande | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,12 +18,12 @@ export default function PharmacyOrderRouter() {
 
   // Token pharmacie (connectée)
   const token = localStorage.getItem("token")
-
+  setError(error);
   useEffect(() => {
     async function loadCommande() {
       try {
         setLoading(true);
-        const res = await axios.get(`http://127.0.0.1:8000/api/orders/detail/${commandeId}/`, {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/detail/${commandeId}/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -43,7 +38,7 @@ export default function PharmacyOrderRouter() {
     };
 
     loadCommande();
-  }, [commandeId]);
+  }, [token,commandeId]);
 
   if (loading) {
     return (
@@ -75,8 +70,9 @@ export default function PharmacyOrderRouter() {
   commande.statut === "en_attente" 
 
 if (devisSubmitted) {
+  //commande={commande} mode="devis_envoye"
   // ✔️ Le devis a déjà été soumis → aller vers la page de préparation
-  return <SoumettreDevis commande={commande} mode="devis_envoye"/>;
+  return <SoumettreDevis />;
 } else {
   // ❌ Pas encore de devis → aller vers saisie des prix
   return <CommandeDetail commande={commande} mode="accepte_par_client" />;

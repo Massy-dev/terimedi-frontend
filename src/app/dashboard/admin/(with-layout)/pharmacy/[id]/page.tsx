@@ -1,7 +1,7 @@
 // app/admin/pharmacies/[id]/page.tsx
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -169,7 +169,13 @@ const commandeStatutConfig = {
   annulee: { label: "Annulée", color: "bg-red-100 text-red-800" },
 };
 
-export default function PharmacyDetailPage({ params }: { params: { id: string } }) {
+export default function PharmacyDetailPage({ 
+  params 
+}: { 
+  params: Promise<{ id: string }>
+}) {
+  const { id } = use(params)
+  console.log(id);
   const router = useRouter();
   const [pharmacy, setPharmacy] = useState<PharmacyDetail>(mockPharmacy);
   const [commandes, setCommandes] = useState<Commande[]>(mockCommandes);
@@ -178,6 +184,7 @@ export default function PharmacyDetailPage({ params }: { params: { id: string } 
 
   const config = statutConfig[pharmacy.statut];
   const Icon = config.icon;
+ 
 
   const handleAction = () => {
     // TODO: Appel API
@@ -191,6 +198,7 @@ export default function PharmacyDetailPage({ params }: { params: { id: string } 
       router.push("/admin/pharmacies");
     }
     setDialogOpen(false);
+    setCommandes(commandes)
   };
 
   const openDialog = (action: "valider" | "rejeter" | "suspendre" | "supprimer") => {
@@ -427,7 +435,7 @@ export default function PharmacyDetailPage({ params }: { params: { id: string } 
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Clock className="h-5 w-5 mr-2" />
-                  Horaires d'ouverture
+                  Horaires d`&apos;ouverture
                 </CardTitle>
               </CardHeader>
               <CardContent>

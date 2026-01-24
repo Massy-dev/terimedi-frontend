@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from 'axios';
-import { routeModule } from "next/dist/build/templates/app-page";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,7 +24,7 @@ export default function LoginPage() {
     setRole("pharmacien")
 
      try {
-      await axios.post('http://192.168.100.4:8000/api/users/register/', {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/register/`, {
        
         phone,
         role,

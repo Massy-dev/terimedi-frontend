@@ -240,7 +240,7 @@ export default function StockPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Gestion du stock</h1>
-          <p className="text-gray-600 mt-1">Gérez l'inventaire de vos médicaments</p>
+          <p className="text-gray-600 mt-1">Gérez l&apos;inventaire de vos médicaments</p>
         </div>
         <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
           <DialogTrigger asChild>
@@ -308,7 +308,7 @@ export default function StockPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="seuil">Seuil d'alerte</Label>
+                  <Label htmlFor="seuil">Seuil d&apos;alerte</Label>
                   <Input
                     id="seuil"
                     type="number"
@@ -318,7 +318,7 @@ export default function StockPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="expiration">Date d'expiration</Label>
+                  <Label htmlFor="expiration">Date d&apos;expiration</Label>
                   <Input
                     id="expiration"
                     type="date"
@@ -546,7 +546,7 @@ export default function StockPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="edit-seuil">Seuil d'alerte</Label>
+                <Label htmlFor="edit-seuil">Seuil d&apos;alerte</Label>
                 <Input
                   id="edit-seuil"
                   type="number"
@@ -555,7 +555,7 @@ export default function StockPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="edit-expiration">Date d'expiration</Label>
+                <Label htmlFor="edit-expiration">Date d&apos;expiration</Label>
                 <Input
                   id="edit-expiration"
                   type="date"

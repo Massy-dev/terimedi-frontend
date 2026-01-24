@@ -3,36 +3,41 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
+import Image from 'next/image'
 
-interface SoumettreDevisProps {
-  commande: any; // ou votre type Commande
-  mode?: 'devis_envoye' | 'preparation' | 'suivi' | 'annulee' | 'soumis';
+type Disponibilite = "disponible" | "rupture";
+
+interface OrderItem {
+  id: string;
+  produit: string;
+  quantity: number;
+  unit_price: number;
+  prescription_image?: string | null;
+  disponibilite: Disponibilite;
+  note_pharmacie?: string;
 }
 
-type Item = {
+interface Order {
   id: string;
-  produit?: string;
-  quantity?: number;
-  unit_price?: number;
-  prescription_image?: string | null;
-  disponibilite?: boolean;
-  note_pharmacie?: string;
-};
+  order_number: string;
+  delivery_fee?: number;
+  items: OrderItem[];
+}
 
-export default function SetPricesPage({ commande }: SoumettreDevisProps) {
-  const { id } = useParams();
+export default function SetPricesPage() {
+  const params = useParams<{ id: string }>();
+  const id = params?.id;
   const router = useRouter();
 
-  const [order, setOrder] = useState<any>(null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [deliveryFee, setDeliveryFee] = useState<number | string>(0);
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<OrderItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // token pharmacie stocké localement après login pharmacie
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("pharmacy_token") : null;
+  //const token = typeof window !== "undefined" ? localStorage.getItem("pharmacy_token") : null;
 
   useEffect(() => {
     fetchOrder();
@@ -43,7 +48,7 @@ export default function SetPricesPage({ commande }: SoumettreDevisProps) {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/api/orders/detail/${id}/`, {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/detail/${id}/`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
@@ -52,19 +57,20 @@ export default function SetPricesPage({ commande }: SoumettreDevisProps) {
       setOrder(data);
 
       // Mappe les produits en items avec champs additionnels
-      const mapped: Item[] = (data.items || []).map((p: any) => ({
+      const mapped: OrderItem[] = (data.items ?? []).map((p: OrderItem) => ({
         id: p.id,
-        produit: p.produit || p.name || p.produit,
-        quantity: p.quantity ?? 1,
+        produit: p.produit,
+        quantity: p.quantity,
         unit_price: p.unit_price ?? 0,
         prescription_image: p.prescription_image ?? null,
-        disponibilite: p.disponibilite !== undefined ? p.disponibilite : true, // par défaut disponible
+        disponibilite: p.disponibilite ?? "disponible",
         note_pharmacie: p.note_pharmacie ?? "",
       }));
+      
 
       setItems(mapped);
       setDeliveryFee(data.delivery_fee ?? 0);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("fetchOrder error", err);
       setError("Impossible de charger la commande.");
     } finally {
@@ -72,7 +78,11 @@ export default function SetPricesPage({ commande }: SoumettreDevisProps) {
     }
   };
 
-  const updateItemField = (index: number, field: keyof Item, value: any) => {
+  const updateItemField =  <K extends keyof OrderItem>(
+    index: number,
+    field: K,
+    value: OrderItem[K]
+  ) => {
     setItems((prev) => {
       const copy = [...prev];
       copy[index] = { ...copy[index], [field]: value };
@@ -114,7 +124,7 @@ export default function SetPricesPage({ commande }: SoumettreDevisProps) {
       };
 
       await axios.post(
-        `http://127.0.0.1:8000/api/orders/${id}/soumettre-devis/`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/orders/${id}/soumettre-devis/`,
         payload,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -124,14 +134,17 @@ export default function SetPricesPage({ commande }: SoumettreDevisProps) {
       // succès
       alert("Devis envoyé au client !");
       router.push("/dashboard/pharmacy/orders");
-    } catch (err: any) {
-      console.error("submitPrices error", err);
-      const message =
-        err?.response?.data?.detail ||
-        err?.response?.data?.error ||
-        "Erreur lors de l'envoi du devis";
-      setError(String(message));
-    } finally {
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const message =
+          err.response?.data?.detail ||
+          err.response?.data?.error ||
+          "Erreur lors de l'envoi du devis";
+        setError(String(message));
+      } else {
+        setError("Erreur inconnue");
+      }
+    }finally {
       setIsSubmitting(false);
     }
   };
@@ -153,7 +166,7 @@ export default function SetPricesPage({ commande }: SoumettreDevisProps) {
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow rounded-lg">
       <h1 className="text-2xl font-bold mb-4">
-        Saisir les prix — Commande #{order.order_number}
+        Saisir les prix — Commande #{order?.order_number}
       </h1>
 
       <div className="space-y-4">
@@ -164,7 +177,7 @@ export default function SetPricesPage({ commande }: SoumettreDevisProps) {
           >
             <div className="w-20 h-20 flex-shrink-0">
               {item.prescription_image ? (
-                <img
+                <Image
                   src={item.prescription_image}
                   alt="Prescription"
                   className="w-20 h-20 rounded object-cover"
@@ -199,10 +212,10 @@ export default function SetPricesPage({ commande }: SoumettreDevisProps) {
                 <div>
                   <label className="block text-sm">Disponibilité</label>
                   <select
-                    value={item.disponibilite ? "available" : "unavailable"}
+                    value={item.disponibilite}
                     name="disponibilite"
                     onChange={(e) =>
-                      updateItemField(index, "disponibilite", e.target.value === "disponible")
+                      updateItemField(index, "disponibilite", e.target.value as Disponibilite)
                     }
                     className="mt-1 w-full border p-2 rounded"
                   >

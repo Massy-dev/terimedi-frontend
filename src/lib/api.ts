@@ -3,7 +3,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8000/", 
+  baseURL: `${process.env.NEXT_PUBLIC_API_URL}`, 
   headers: { 
     "Content-Type": "application/json",
     Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -16,7 +16,7 @@ export default axiosInstance;
 
 export async function getUserId() {
   const token = localStorage.getItem("token");
-  const profile = await axios.get("http://localhost:8000/api/pharmacies/me/", {
+  const profile = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pharmacies/me/`, {
                     headers: { Authorization: `Bearer ${token}` },
                   });
       
@@ -31,7 +31,7 @@ export async function getUserId() {
 
 /*export async function loginUser(username: string, password: string) {
   //const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login/`, {
-  const res = await fetch("http://localhost:8000/api/users/login/", {  
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/login/`, {  
   method: 'POST',
     headers: {
       'Content-Type': 'application/json',

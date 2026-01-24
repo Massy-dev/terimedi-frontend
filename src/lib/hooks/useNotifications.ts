@@ -1,6 +1,8 @@
-// @ts-nocheck
+
 import { useState, useEffect, useCallback } from 'react';
-import { getWebSocketService } from '../lib/websocket';
+import { getWebSocketService } from '../websocket';
+import  { Notification } from "@/types/commande";
+import type { WebSocketStatus } from "@/types/commande";
 import {
   getNotifications,
   getUnreadCount,
@@ -8,17 +10,23 @@ import {
   markAllAsRead,
 } from './api';
 
+
+
+
+
+
 /**
  * Hook personnalisé pour gérer les notifications
  */
 export const useNotifications = () => {
-  const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [wsStatus, setWsStatus] = useState('disconnected');
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [wsStatus, setWsStatus] = useState<WebSocketStatus>('disconnected');
 
   // Charger les notifications
-  const loadNotifications = useCallback(async (isRead = null) => {
+  const loadNotifications = useCallback(
+    async (isRead: boolean | null = null): Promise<void> => {
     setLoading(true);
     try {
       const data = await getNotifications(isRead);
@@ -28,10 +36,12 @@ export const useNotifications = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, 
+  []
+);
 
   // Charger le compteur non lues
-  const loadUnreadCount = useCallback(async () => {
+  const loadUnreadCount = useCallback(async (): Promise<void> => {
     try {
       const count = await getUnreadCount();
       setUnreadCount(count);
@@ -41,7 +51,8 @@ export const useNotifications = () => {
   }, []);
 
   // Marquer comme lue
-  const markNotificationAsRead = useCallback(async (notificationId) => {
+  const markNotificationAsRead = useCallback(
+    async (notificationId: string): Promise<void> => {
     try {
       await markAsRead(notificationId);
       
@@ -52,9 +63,12 @@ export const useNotifications = () => {
       }
       
       // Mettre à jour localement
-      setNotifications(prev =>
-        prev.map(n => n.id === notificationId ? { ...n, is_read: true } : n)
+      setNotifications((prev: Notification[]) =>
+        prev.map((n) =>
+          n.id === notificationId ? { ...n, is_read: true } : n
+        )
       );
+
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
       console.error('Erreur marquage comme lu:', error);
@@ -63,13 +77,13 @@ export const useNotifications = () => {
   }, []);
 
   // Tout marquer comme lu
-  const markAllNotificationsAsRead = useCallback(async () => {
+  const markAllNotificationsAsRead = useCallback(async (): Promise<number> => {
     try {
       const count = await markAllAsRead();
       
       // Mettre à jour localement
       setNotifications(prev =>
-        prev.map(n => ({ ...n, is_read: true }))
+        prev.map((n) => ({ ...n, is_read: true }))
       );
       setUnreadCount(0);
       
@@ -81,7 +95,7 @@ export const useNotifications = () => {
   }, []);
 
   // Rafraîchir tout
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (): Promise<void> => {
     await Promise.all([
       loadNotifications(),
       loadUnreadCount(),
@@ -105,21 +119,26 @@ export const useNotifications = () => {
         console.log('Nouvelle notification via WebSocket');
         
         // Ajouter la notification à la liste
-        setNotifications(prev => [message.notification, ...prev]);
-        setUnreadCount(prev => prev + 1);
-      } else if (message.type === 'notification_read') {
+        setNotifications((prev) => [message.notification as Notification, ...prev,
+        ]);
+        setUnreadCount((prev) => prev + 1);
+      }
+      
+      if (message.type === 'notification_read') {
         // Notification marquée comme lue
-        setNotifications(prev =>
-          prev.map(n =>
-            n.id === message.notification_id ? { ...n, is_read: true } : n
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.id === message.notification_id 
+              ? { ...n, is_read: true } 
+              : n
           )
         );
-        setUnreadCount(prev => Math.max(0, prev - 1));
+        setUnreadCount((prev) => Math.max(0, prev - 1));
       }
     });
 
     // Écouter le statut WebSocket
-    const unsubscribeStatus = ws.onStatusChange((status) => {
+    const unsubscribeStatus = ws.onStatusChange((status: WebSocketStatus) => {
       console.log('Statut WebSocket:', status);
       setWsStatus(status);
     });
@@ -147,8 +166,8 @@ export const useNotifications = () => {
 /**
  * Hook pour gérer le WebSocket
  */
-export const useWebSocket = (userId) => {
-  const [status, setStatus] = useState('disconnected');
+export const useWebSocket = (userId?: string) => {
+  const [status, setStatus] = useState<WebSocketStatus>("disconnected");
 
   useEffect(() => {
     if (!userId || typeof window === 'undefined') return;
@@ -160,7 +179,8 @@ export const useWebSocket = (userId) => {
     ws.connect(userId);
 
     // Écouter le statut
-    const unsubscribe = ws.onStatusChange((newStatus) => {
+    const unsubscribe = ws.onStatusChange(
+      (newStatus: WebSocketStatus) => {
       setStatus(newStatus);
     });
 
