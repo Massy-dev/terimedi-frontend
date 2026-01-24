@@ -89,7 +89,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <div className="p-4 border-t border-gray-800">
           <div className="flex items-center space-x-3">
             <Avatar>
-              <AvatarImage src="/admin-avatar.png" />
+              <AvatarImage src="https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg" />
               <AvatarFallback className="bg-green-100 text-green-700">AD</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
@@ -180,7 +180,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                   <Avatar>
-                    <AvatarImage src="/admin-avatar.png" />
+                    <AvatarImage src="https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg" />
                     <AvatarFallback className="bg-green-100 text-green-700">AD</AvatarFallback>
                   </Avatar>
                 </Button>
