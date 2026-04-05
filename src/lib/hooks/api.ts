@@ -63,7 +63,7 @@ const getAuthToken = (): string | null => {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("auth_token");
 };
-alert("token dans api.ts : "+getAuthToken());
+console.log("token dans api.ts : "+getAuthToken()+" et token dans localStorage : "+localStorage.getItem("auth_token"));
 api.interceptors.request.use((config) => {
   const token = getAuthToken();
   if (token && config.headers) {
