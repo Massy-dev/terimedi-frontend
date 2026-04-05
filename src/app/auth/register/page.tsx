@@ -22,7 +22,7 @@ export default function LoginPage() {
     setSuccess("");
     setError("");
     setRole("pharmacien")
-
+    
      try {
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/users/register/`, {
        
@@ -31,7 +31,7 @@ export default function LoginPage() {
         password,
         password2,
       });
-
+      
       setSuccess('Registration successful! Please log in.');
       // Redirection ajout pharmacie
         router.push("/auth/login");

@@ -246,7 +246,7 @@ export default function CommandesPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <Button variant="ghost" size="sm" asChild>
-                            <Link href={`/dashboard/pharmacy/orders/${commande.id}`}>
+                            <Link href={`/dashboard/pharmacy/orders/${commande.order_number}`}>
                               <Eye className="h-4 w-4 mr-1" />
                               Détails
                             </Link>
