@@ -20,7 +20,7 @@ export default function DashboardPage() {
             router.push("/auth/login");
             return;
           }
-
+      console.log("token dans page.tsx : ",token);
       const profile = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/pharmacies/me/`, {
                     headers: { Authorization: `Bearer ${token}` },
                   });

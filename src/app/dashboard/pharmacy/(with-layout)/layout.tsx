@@ -68,9 +68,11 @@ export default function PharmacienLayout({ children }: { children: ReactNode }) 
         }
   
         // 3. Connecter le WebSocket si l'utilisateur est authentifié
-        const userId = getUserId(); // Fonction à adapter selon votre auth
+        const userId = getUserId();
+        console.log("userId dans layout.tsx : ",userId);
         if (userId) {
           const ws = getWebSocketService();
+          console.log("ws dans layout.tsx : ",ws);
           if (ws) {
             ws.connect(String(userId));
             console.log('WebSocket initialisé');
@@ -95,6 +97,7 @@ export default function PharmacienLayout({ children }: { children: ReactNode }) 
     
     // Exemple: récupérer depuis localStorage
     const userId = localStorage.getItem('user_id');
+    console.log("userId dans getUserId : ",userId);
     return userId ? parseInt(userId) : null;
     
     // Ou depuis un cookie, JWT, context, etc.
