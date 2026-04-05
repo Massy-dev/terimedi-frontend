@@ -19,7 +19,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (url.pathname.startsWith('/pharmacy') && role !== 'pharmacy') {
+  if (url.pathname.startsWith('/pharmacy') && role !== 'pharmacien') {
     url.pathname = '/not-authorized';
     return NextResponse.redirect(url);
   }

@@ -80,7 +80,7 @@ api.interceptors.response.use(
       // Rediriger vers login si non authentifié
    
         localStorage.removeItem('auth_token');
-        window.location.href = '/login';
+        window.location.href = 'auth/login';
       
     }
     return Promise.reject(error);

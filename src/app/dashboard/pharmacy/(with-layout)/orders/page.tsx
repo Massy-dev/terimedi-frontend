@@ -217,7 +217,7 @@ export default function CommandesPage() {
                   </TableRow>
                 ) : (
                   filteredCommandes.map((commande) => {
-                    console.log(commande.statut);
+                    
                     const config = statutConfig[commande.statut];
                     
                     const Icon = config.icon;
