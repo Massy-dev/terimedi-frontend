@@ -96,7 +96,7 @@ export default function PharmacienLayout({ children }: { children: ReactNode }) 
     if (typeof window === 'undefined') return null;
     
     // Exemple: récupérer depuis localStorage
-    const userId = localStorage.getItem('user_id');
+    const userId = localStorage.getItem('auth_token');
     console.log("userId dans getUserId : ",userId);
     return userId ? parseInt(userId) : null;
     
